@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import springwebflux.controller.UserController;
+import springwebflux.mapper.UserMapper;
 import springwebflux.model.request.UserRequest;
 import springwebflux.model.response.UserResponse;
 import springwebflux.service.UserService;
@@ -20,6 +21,8 @@ public class UserControllerImpl implements UserController {
 
     private final UserService service;
 
+    private UserMapper mapper;
+
     @Override
     public ResponseEntity<Mono<Void>> save(UserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -28,7 +31,9 @@ public class UserControllerImpl implements UserController {
 
     @Override
     public ResponseEntity<Mono<UserResponse>> findById(String id) {
-        return null;
+        return ResponseEntity.ok().body(
+                service.findById(id).map(mapper::toResponse)
+        );
     }
 
     @Override
