@@ -2,6 +2,8 @@ package springwebflux.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import springwebflux.entity.User;
 import springwebflux.mapper.UserMapper;
@@ -33,4 +35,13 @@ public class UserService {
                 );
     }
 
+    public Flux<User> findAll(){
+        return repository.findAll();
+    }
+
+    public Mono<User> update(final String id, final UserRequest request){
+        return findById(id)
+                .map(entity -> mapper.toEntity(request, entity))
+                .flatMap(repository::save);
+    }
 }
