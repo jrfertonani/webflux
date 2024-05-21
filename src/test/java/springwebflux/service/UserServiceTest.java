@@ -45,7 +45,7 @@ class UserServiceTest {
         Mono<User> result = service.save(request);
 
         StepVerifier.create(result)
-                .expectNextMatches(Objects::nonNull)
+                .expectNextMatches(user -> user.getClass() == User.class)
                 .expectComplete()
                 .verify();
 
@@ -54,6 +54,19 @@ class UserServiceTest {
 
     @Test
     void findById() {
+        when(repository.findById(anyString())).thenReturn(Mono.just(User.builder()
+                .id("1234")
+                .build()));
+
+        Mono<User> result = service.findById("1234");
+
+        StepVerifier.create(result)
+                .expectNextMatches(user -> user.getClass() == User.class)
+                .expectComplete()
+                .verify();
+
+        Mockito.verify(repository, times(1)).findById(anyString());
+
     }
 
     @Test
