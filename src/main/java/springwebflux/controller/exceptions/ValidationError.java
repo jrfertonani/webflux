@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class ValidationError extends StandardError implements Serializable {
+public final class ValidationError extends StandardError implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
