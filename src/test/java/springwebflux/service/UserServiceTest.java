@@ -99,6 +99,7 @@ class UserServiceTest {
                 .verify();
 
         verify(repository, times(1)).save(any(User.class));
+
     }
 
     @Test
