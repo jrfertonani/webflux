@@ -40,7 +40,7 @@ class UserServiceTest {
         UserRequest request = new UserRequest("Ademir Junior", "email@email.com", "123");
         User entity = User.builder().build();
 
-        when(mapper.toEntity(any())).thenReturn(entity);
+        when(mapper.toEntity(any(UserRequest.class))).thenReturn(entity);
         when(repository.save(any(User.class))).thenReturn(Mono.just(User.builder().build()));
 
         Mono<User> result = service.save(request);
@@ -55,6 +55,20 @@ class UserServiceTest {
 
     @Test
     void findById() {
+        when(repository.findById(anyString())).thenReturn(Mono.just(User.builder().build()));
+
+        Mono<User> result = service.findById("123");
+
+        StepVerifier.create(result)
+                .expectNextMatches(user -> user.getClass() == User.class)
+                .expectComplete()
+                .verify();
+
+        Mockito.verify(repository, times(1)).findById(anyString());
+    }
+
+    @Test
+    void findAll() {
         when(repository.findAll()).thenReturn(Flux.just(User.builder().build()));
 
         Flux<User> result = service.findAll();
@@ -69,22 +83,22 @@ class UserServiceTest {
     }
 
     @Test
-    void findAll() {
-        when(repository.findById(anyString())).thenReturn(Mono.just(User.builder().build()));
+    void update() {
+        UserRequest request = new UserRequest("Ademir Junior", "email@email.com", "123");
+        User entity = User.builder().build();
 
-        Mono<User> result = service.findById("1234");
+        when(mapper.toEntity(any(UserRequest.class), any(User.class))).thenReturn(entity);
+        when(repository.findById(anyString())).thenReturn(Mono.just(entity));
+        when(repository.save(any(User.class))).thenReturn(Mono.just(entity));
+
+        Mono<User> result = service.update("123",request);
 
         StepVerifier.create(result)
                 .expectNextMatches(user -> user.getClass() == User.class)
                 .expectComplete()
                 .verify();
 
-        Mockito.verify(repository, times(1)).findById(anyString());
-
-    }
-
-    @Test
-    void update() {
+        verify(repository, times(1)).save(any(User.class));
     }
 
     @Test
